@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<title>Computer's_Physics</title>
+<meta charset="UTF-8">
+</head>
+
+<body>
+<a href="index.html"><h1>WEB</h1></a>
+<h2>Arithmetic Logic Unit</h2>
+<ul>
+    <li>Digital Logic Circuit</li>
+    <ol>
+        <a href="Digital to analogue transformation.html"><li>Digital to analogue transformation</li></a>
+        <a href="Logic to Electic Circuit.html"
+        target="_blank" title=""><li>Logic to Electic Circuit</li></a>
+        <a href="Voltage Level Change.html"><li>Voltage Level Change</li></a>
+        <a href="Specific Voltage Input.html"><li>Specific Voltage Input</li></a>
+        <a href="Logic's Input and output ex.html"><li>Logic's Input and output ex</li></a>
+    </ol>
+    <li>Logic circuit</li>
+    <ol>
+        <a href="Logic gate.html"><li>Logic gate</li></a>
+        <a href="Applied Circuit.html"
+        target="_blank" title=""><li>Applied Circuit</li></a>
+        <a href="Sequence Circuit.html"><li>Sequence Circuit</li></a>
+    </ol>
+</ul>
+<p>Logic to Electic Circuit</p>
+
+수학적 개념의 논리를 전자회로로 표현하기 위해 표준화 된 방법이 필요하다. <br>
+우선 결정할 것이 논리 0과 1을 어떻게 표현할 것인가이다.<br>
+
+기본적인 개념은 논리표현에서 전압을 기준으로 표현한다. <br>
+전류를 흐르면 1아니면 0으로 표현할 수 있지만 이것을 전자회로를 표현하기는 전압으로 하는 표현보다 어렵다. <br>
+입력과 출력에서 많은 다양한 회로를 수용하기가 경험적으로 쉽지 않다. <br>
+따라서 초기에 전압을 기준으로 논리를 표현한다.<br>
+
+참과 거짓은 다음 기준이다:<br>
+
+보통 논리회로에서는 단일전원을 사용하는 것이 보통이다. <br>
+그렇다면 입력과 출력이 반드시 Vcc나 0V이어야 하는가 하는 문제이다. <br>
+이것은 BJT나 FET등을 이용해서 논리소자를 만드는데, 스위치 기능상 Vcc 또는 0V로 출력되지는 않는다. <br>
+보통의 전기 스위치는 저항이 0이지만, BJT나 FET로 스위치 할 때는 저항이 0이 아니다. <br>
+따라서 특정 전압 범위안에서 결정하면 된다. 다음과 같은 최소 고려 전압 밖에서 고려해야 한다.<br>
+
+즉, 각 논리의 출력 전압에서 스위칭 전압강하 만을 고려하므로 최소 이 전압보다는 큰 마진전압을 가져야한다:<br>
+
+V_S는 BJT나 FET의 스위칭의 임피던스에 걸리는 전압이다.<br>
+BJT의 경우 포화상태(Saturation Mode)에서 걸리는 C-E간의 전압이다. <br>
+일반적인 BJT가 0.2V 이하이다. 쇼트키-트랜지스터는 ON시 0.35V로 또 다른 전압으로 동작한다. <br>
+그렇다면 논리 0이 0~0.2V 범위인가의 범위 설정문제가 나온다. <br>
+실제로 동작할 때는 위와 같은 범위에서는 동작하지만, 표준화 과정에서 전압범위는 외부회로의 전압관계를 고려하여 마진이 더 크다. <br>
+TTL LS형의 경우 0 ~ 0.8V로 설정되어 있다. 이것은 스위칭하는 트랜지스터의 포화영역의 전압과 노이지 마진을 추가한 전압 범위이다.<br>
+</body>
+</html>

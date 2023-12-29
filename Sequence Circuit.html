@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Computer's_Physics</title>
+<meta charset="UTF-8">
+</head>
+
+<body>
+<a href="index.html"><h1>WEB</h1></a>
+<h2>Arithmetic Logic Unit</h2>
+<ul>
+    <li>Digital Logic Circuit</li>
+    <ol>
+        <a href="Digital to analogue transformation.html"><li>Digital to analogue transformation</li></a>
+        <a href="Logic to Electic Circuit.html"
+        target="_blank" title=""><li>Logic to Electic Circuit</li></a>
+        <a href="Voltage Level Change.html"><li>Voltage Level Change</li></a>
+        <a href="Specific Voltage Input.html"><li>Specific Voltage Input</li></a>
+        <a href="Logic's Input and output ex.html"><li>Logic's Input and output ex</li></a>
+    </ol>
+    <li>Logic circuit</li>
+    <ol>
+        <a href="Logic gate.html"><li>Logic gate</li></a>
+        <a href="Applied Circuit.html"
+        target="_blank" title=""><li>Applied Circuit</li></a>
+        <a href="Sequence Circuit.html"><li>Sequence Circuit</li></a>
+    </ol>
+</ul>
+<p>Sequence Circuit</p>
+이전 상태의 신호와 외부 입력 신호에 따라 출력이 결정되는 회로이다. 이전상태가 계속 유지되려면 출력을 입력에 반영하는 되먹임 논리회로 구조를 갖는다.
+<br>
+래치와 플립플롭<br>
+제어 신호에 따라, 현재의 입력 신호가 저장되거나 이전의 입력 신호를 보관 유지하는 것이다.<br>
+<br>
+래치와 플립플럽의 차이는 입력이 들어왔을 때, 출력에 반영하는 방식이 다르다.<br>
+<br>
+래치 : 입력이 들어왔을 때, 조건이 맞으면 바로 반영된다. 단, EN 신호가 있을 경우, 이 조건이 만족해야 한다.<br>
+플립플럽 : 입력이 들어왔을 때, 클럭(CLK, CK, clock)의 동기 신호에 의해 입력이 반영된다.<br>
+플립플럽은 입력을 반영하는 시점이 상승에지(클럭에서 논리 L에서 H로 바뀌는 순간)나 하강에지(클럭에서 논리 H에서 L로 바뀌는 순간)에서 반영한다. 이 반영시점 동기를 위해 래치보다 회로가 복잡하다.
+<br>
+플립플롭 (Flip - Flop)<br>
+플립플롭은 클럭(CLK, CK 등으로 표기) 신호에 동기화되면서 입력 값(D, S, J 등)을 출력한다. 이 값들은 다음 클럭이 입력되기 전까지 보존된다.<br>
+
+D 플립플롭<br>
+J-K 플립플롭<br>
+T 플립플롭<br>
+A 플립플롭<br>
+완전 동기식 회로<br>
+전체가 동일한 클럭으로 동작되는 회로이다.(동기클럭 설계) 특히 대규모 회로에서 넓게 사용되고 있다.<br>
+
+설계할 때 대규모 회로 시뮬레이션이 빠르다.<br>
+제조할 때 모든 래치의 1, 0 변화 테스트를 하는 벤치 프로그램 제작이 쉽다.<br>
+카운터<br>
+레지스터와 게이트로 구성되어서 순서에 따라서 일정한 출력이 나오고, 일정한 주기가 되면 원래 상태로 되돌아간다.<br>
+
+필드 코드 카운터(Filled Code Counter): 모든 출력의 상태가 사용되는 것.<br>
+2 비트 코드 카운터<br>
+그레이 코드 카운터<br>
+이진 카운터<br>
+언필드 코드 카운터(Unfilled Code Counter): 출력의 일부만 사용되고, 그 밖에는 알 수 없는 상태가 되는 것.<br>
+3 비트 이상의 코드 카운터<br>
+링 카운터<br>
+M계열 발생기 (LFSR: Linear Feedback Shift Register)<br>
+시퀀서 (Sequencer)<br>
+입력 신호에 따라서 카운터, 레지스터, 게이트 등으로 제작된 회로가 연산 및 일련의 동작을 하는 것이다.<br>
+
+</body>
+
+</html>
