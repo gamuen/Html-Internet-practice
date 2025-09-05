@@ -1,0 +1,47 @@
+<!-- templates/making_feed.html -->
+<form id="feed-form" enctype="multipart/form-data">
+  <input type="hidden" name="lat" id="form-lat">
+  <input type="hidden" name="lng" id="form-lng">
+
+  <label for="feed-intro">피드 소개:</label><br>
+  <textarea name="feed_introduction" id="feed-intro" rows="3" style="width:100%"></textarea><br><br>
+
+  <label for="feed-pictures">사진 업로드:</label><br>
+  <input type="file" name="feed_images" id="feed-pictures" multiple><br><br>
+
+  <button type="submit">저장</button>
+</form>
+
+<div id="uploaded-images" style="display:flex; overflow-x: auto; gap: 10px; margin-top: 10px;"></div>
+
+<script>
+document.getElementById("feed-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const lat = document.getElementById("form-lat").value;
+  const lng = document.getElementById("form-lng").value;
+
+  fetch("/add_feed_full", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("✅ 피드 저장 완료!");
+
+      const imgDiv = document.getElementById("uploaded-images");
+      data.image_urls.forEach(url => {
+        const img = document.createElement("img");
+        img.src = url;
+        img.style.height = "100px";
+        imgDiv.appendChild(img);
+      });
+
+    } else {
+      alert("❌ 실패: " + data.message);
+    }
+  });
+});
+</script>

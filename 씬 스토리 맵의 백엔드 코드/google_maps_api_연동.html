@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps 피드</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+    <script>
+        let map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 37.5665, lng: 126.9780 },  // 서울 중심
+                zoom: 10,
+            });
+
+            map.addListener("zoom_changed", fetchFeeds);
+        }
+
+        function fetchFeeds() {
+            const zoomLevel = map.getZoom();
+            const center = map.getCenter();
+            
+            fetch(`/feeds?latitude=${center.lat()}&longitude=${center.lng()}&zoom=${zoomLevel}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(feed => {
+                        new google.maps.Marker({
+                            position: { lat: feed.latitude, lng: feed.longitude },
+                            map,
+                            title: feed.text,
+                        });
+                    });
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Google Maps 피드</h1>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+</body>
+</html>

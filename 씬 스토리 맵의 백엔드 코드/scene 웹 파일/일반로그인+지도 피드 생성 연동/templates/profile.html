@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>프로필</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        /* 배경 이미지 컨테이너 */
+        .background-container {
+            position: relative;
+            width: 100%;
+            height: 40vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        /* 전체 프로필 영역 */
+        .profile-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -100px; /* 배경 위로 겹치게 조정 */
+        }
+
+        .profile-pic {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background-color: #ccc;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+        }
+
+        .profile-pic:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #fileInput, #bgInput {
+            display: none;
+        }
+
+        textarea {
+            width: 300px;
+            resize: none;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        h3 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Home 화면으로 이동하는 버튼 -->
+<form action="{{ url_for('index') }}" method="get" style="position: fixed; top: 10px; left: 10px; margin: 0; z-index: 9999;">
+  <button type="submit"
+      style="
+          background-image: url('{{ url_for('static', filename=profile_img_url) }}');
+          background-size: cover;
+          background-position: center;
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+      ">Home
+  </button>
+</form>
+
+    <!-- 배경 이미지 영역 -->
+<form action="{{ url_for('upload_background') }}" method="POST" enctype="multipart/form-data" style="position: relative;">
+    <label for="bgInput">
+        <div class="background-container" style="background-image: url('{{ background_pic_url }}');"></div>
+    </label>
+    <input type="file" id="bgInput" name="background_pic" accept="image/*">
+    
+    <!-- 🔽 버튼을 오른쪽 상단에 위치시키는 컨테이너 -->
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <button type="submit">배경화면 저장</button>
+    </div>
+</form>
+
+    <!-- 🔹 프로필 정보 영역 -->
+    <div class="profile-container">
+
+        <form action="{{ url_for('upload_profile_pic') }}" method="POST" enctype="multipart/form-data">
+            <label for="fileInput">
+                <div class="profile-pic" style="background-image: url('{{ profile_img_url }}');"></div>
+            </label>
+            <input type="file" id="fileInput" name="profile_pic" accept="image/png, image/jpeg" onchange="loadPreview(event)">
+            <h3>{{ nickname }}</h3>
+            <button type="submit">프로필 사진 저장</button>
+        </form>
+
+        <form action="{{ url_for('update_intro') }}" method="POST">
+            <textarea name="intro_text" rows="5" placeholder="자기소개를 작성하세요">{{ intro_text }}</textarea><br>
+            <button type="submit">프로필 소개문구 저장</button>
+        </form>
+
+        <form action="{{ url_for('delete_account') }}" method="POST" onsubmit="return confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+            <button type="submit" style="background-color:red; color:white;">해당 계정 삭제</button>
+        </form>
+    </div>
+
+    <script>
+        function loadPreview(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePic').style.backgroundImage = `url(${e.target.result})`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+
+</html>

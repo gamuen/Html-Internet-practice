@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<!-- HTML5 문서 타입 선언 -->
+<html lang="ko">
+<!-- 문서의 언어를 한국어로 설정 -->
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- 문자 인코딩을 UTF-8로 설정 -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 반응형 디자인을 위해 화면 너비에 따라 콘텐츠 크기 조절 -->
+
+  <title>지도 검색 기능 + 피드 저장</title>
+  <!-- 브라우저 탭에 표시될 문서 제목 -->
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+    /* 브라우저 기본 여백 제거, 전체 높이를 100%로 설정 */
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    /* 지도 div를 화면 전체로 설정 */
+
+    #search-container {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex;
+      gap: 8px;
+    }
+    /* 검색창 스타일링: 상단 중앙 고정, 흰색 배경, 그림자 및 라운드 처리 */
+
+    #search-input {
+      padding: 6px;
+      font-size: 14px;
+      width: 200px;
+    }
+    /* 검색 입력창 스타일 */
+
+    #search-btn {
+      padding: 6px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    /* 검색 버튼 스타일 */
+  </style>
+</head>
+
+<body>
+  <!-- 페이지 본문 시작 -->
+
+  <div id="search-container">
+    <!-- 검색창 UI 컨테이너 -->
+    <input type="text" id="search-input" placeholder="지역명 입력 (예: 강남구)" />
+    <!-- 지역명을 입력할 텍스트 필드 -->
+    <button id="search-btn">이동</button>
+    <!-- 지도 이동 버튼 -->
+  </div>
+
+  <!-- 프로필 버튼 -->
+  <form action="{{ url_for('login') }}">
+    <button id="profile-button" type="submit">프로필 보기</button>
+  </form>
+
+  <div id="map"></div>
+  <!-- 지도를 표시할 div 요소 -->
+
+  <script>
+    // 지도 스타일 설정 (버스 정류장 숨기기)
+    const mapStyles = [
+      { featureType: "transit.station.bus", stylers: [{ visibility: "off" }] }
+    ];
+
+    const fallbackPosition = { lat: 37.5665, lng: 126.9780 };
+    // 위치 권한 거부 시 기본 위치 (서울 시청 좌표)
+
+    let map; // 전역 변수: Google 지도 객체
+    const markers = []; // 생성된 마커들을 저장할 배열
+
+    // Google Maps API 로드 후 실행될 콜백 함수
+    window.initMap = function () {
+      // 지도 초기화
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: fallbackPosition,
+        zoom: 16,
+        disableDefaultUI: true,  // 기본 UI 제거
+        zoomControl: true,       // 줌 컨트롤만 활성화
+        styles: mapStyles,       // 커스텀 스타일 적용
+      });
+
+      // 브라우저 위치 정보 접근
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => {
+            const pos = { lat: coords.latitude, lng: coords.longitude };
+            map.setCenter(pos);  // 현재 위치로 지도 이동
+            console.log("📍 사용자 위치로 지도 이동:", pos);
+          },
+          () => console.warn("⚠️ 위치 권한 거부됨, fallback 위치 사용")
+        );
+      }
+
+      setupSearch();       // 검색 기능 초기화
+      loadExistingFeeds(); // 저장된 피드 불러오기
+
+      // 지도에서 마우스 오른쪽 클릭 시 이벤트 처리
+      map.addListener("rightclick", (event) => {
+        const lat = event.latLng.lat();   // 클릭한 위도
+        const lng = event.latLng.lng();   // 클릭한 경도
+        const intro = prompt("피드 설명을 입력하세요:"); // 사용자에게 설명 입력 받기
+
+        if (!intro) return;  // 설명 없으면 종료
+
+        // 서버에 피드 저장 요청
+        fetch("/add_feed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat, lng, feed_introduction: intro })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("✅ 피드 저장 완료!");
+            addMarker({ lat, lng });  // 저장 성공 시 마커 추가
+          } else {
+            alert("❌ 피드 저장 실패: " + data.message);
+          }
+        });
+      });
+    };
+
+    // 검색창 입력 및 버튼 이벤트 설정
+    const setupSearch = () => {
+      const input = document.getElementById("search-input");
+      const button = document.getElementById("search-btn");
+      const geocoder = new google.maps.Geocoder(); // 주소를 좌표로 변환하는 객체
+
+      // 검색 실행 함수
+      const handleSearch = () => {
+        const query = input.value.trim();
+        if (!query) return;
+
+        // 주소 -> 좌표 변환 요청
+        geocoder.geocode({ address: query }, (results, status) => {
+          if (status === "OK" && results.length > 0) {
+            const location = results[0].geometry.location;
+            map.setCenter(location); // 검색된 위치로 지도 이동
+            console.log("🔍 검색 위치 이동:", location.toJSON());
+          } else {
+            alert("검색 결과가 없습니다.");
+            console.warn("❌ Geocoding 실패:", status);
+          }
+        });
+      };
+
+      button.onclick = handleSearch;  // 버튼 클릭 시 검색 실행
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") handleSearch(); // 엔터 입력 시 검색 실행
+      });
+    };
+
+    // 마커 추가 함수
+    const addMarker = ({ lat, lng }) => {
+      const marker = new google.maps.Marker({
+        position: { lat, lng },  // 마커 위치
+        map: map,                // 표시할 지도 객체
+        icon: {
+          url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" // 마커 아이콘
+        }
+      });
+      markers.push(marker); // 마커 배열에 저장
+    };
+
+    // 서버에서 기존 피드 불러와 마커로 표시
+    const loadExistingFeeds = () => {
+      fetch("/get_feeds")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && Array.isArray(data.feeds)) {
+            data.feeds.forEach(feed => {
+              addMarker({ lat: feed.lat, lng: feed.lng });
+            });
+          } else {
+            console.warn("❌ 피드 로딩 실패 또는 형식 오류");
+          }
+        })
+        .catch(err => console.error("❌ 피드 목록 요청 실패:", err));
+    };
+  </script>
+
+  <!-- Google Maps JavaScript API를 비동기로 불러오고 initMap 실행 -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtqYND3hYOJxqadz5sbtHjxGbiuw-iCmI&callback=initMap">
+  </script>
+</body>
+</html>
